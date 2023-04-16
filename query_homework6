@@ -1,0 +1,9 @@
+WITH Stats AS (
+    SELECT Name, Latitude, Longitude, Date, (MaxTempCelsius*1.8+32) as TodayMaxTempFahrenheit, (LAG(MaxTempCelsius, 1) OVER (PARTITION BY WeatherStation order by Date) *1.8+32) YesterdayMaxTempFahrenheit
+    FROM WeatherCharts
+    INNER JOIN WeatherStation on WeatherStation.Wban = WeatherCharts.WeatherStation
+    )
+SELECT Name, Latitude, Longitude, Date
+FROM Stats
+WHERE TodayMaxTempFahrenheit - YesterdayMaxTempFahrenheit >10
+ORDER BY Name;
